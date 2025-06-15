@@ -7,23 +7,7 @@ import { BOARD_WIDTH, BOARD_HEIGHT } from '../lib/tetris/GameBoard';
 const CELL_SIZE = 30;
 const BOARD_PADDING = 2;
 
-// Function to get color for placed blocks
-const getBlockColor = (blockValue: number): string => {
-  if (blockValue === 0) return 'transparent';
-  
-  // Map ASCII codes back to shape names and get colors
-  const shapeMap: { [key: number]: string } = {
-    73: TETROMINO_SHAPES.I.color, // 'I'
-    79: TETROMINO_SHAPES.O.color, // 'O'
-    84: TETROMINO_SHAPES.T.color, // 'T'
-    83: TETROMINO_SHAPES.S.color, // 'S'
-    90: TETROMINO_SHAPES.Z.color, // 'Z'
-    74: TETROMINO_SHAPES.J.color, // 'J'
-    76: TETROMINO_SHAPES.L.color, // 'L'
-  };
-  
-  return shapeMap[blockValue] || '#888888';
-};
+
 
 interface TetrisGameProps {}
 
@@ -103,6 +87,8 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    console.log('Drawing canvas with game state:', gameState.board);
+
     // Clear canvas
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -140,8 +126,9 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
     // Draw placed blocks
     for (let y = 0; y < BOARD_HEIGHT; y++) {
       for (let x = 0; x < BOARD_WIDTH; x++) {
-        if (gameState.board[y][x]) {
-          ctx.fillStyle = getBlockColor(gameState.board[y][x]);
+        if (gameState.board[y][x] === 1) {
+          // Use a solid color for placed blocks
+          ctx.fillStyle = '#888888';
           ctx.fillRect(
             boardStartX + x * CELL_SIZE + 1,
             boardStartY + y * CELL_SIZE + 1,
@@ -149,7 +136,7 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
             CELL_SIZE - 2
           );
           
-          // Add border for better visibility
+          // Add white border
           ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1;
           ctx.strokeRect(

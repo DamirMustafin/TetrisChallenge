@@ -228,11 +228,15 @@ export class GameEngine {
   private placePiece(): void {
     if (!this.gameState.currentPiece) return;
 
+    console.log('Placing piece:', this.gameState.currentPiece.shape.name, 'at position:', this.gameState.currentPiece.position);
+
     this.gameBoard.placePiece(
       this.gameState.currentPiece.shape,
       this.gameState.currentPiece.position,
       this.gameState.currentPiece.rotation
     );
+
+    console.log('Board after placing piece:', this.gameBoard.board);
 
     this.soundManager.playHit();
 

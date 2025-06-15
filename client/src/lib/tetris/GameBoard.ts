@@ -50,8 +50,7 @@ export class GameBoard {
           const boardY = position.y + y;
           
           if (boardY >= 0 && boardY < BOARD_HEIGHT && boardX >= 0 && boardX < BOARD_WIDTH) {
-            // Store the shape name/type instead of just 1
-            this.board[boardY][boardX] = shape.name.charCodeAt(0); // Use ASCII code for identification
+            this.board[boardY][boardX] = 1;
           }
         }
       }
@@ -62,7 +61,7 @@ export class GameBoard {
     let linesCleared = 0;
     
     for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
-      if (this.board[y].every(cell => cell !== 0)) {
+      if (this.board[y].every(cell => cell === 1)) {
         // Remove the line
         this.board.splice(y, 1);
         // Add new empty line at top
@@ -77,7 +76,7 @@ export class GameBoard {
 
   isGameOver(): boolean {
     // Check if any blocks are in the top two rows
-    return this.board[0].some(cell => cell !== 0) || this.board[1].some(cell => cell !== 0);
+    return this.board[0].some(cell => cell === 1) || this.board[1].some(cell => cell === 1);
   }
 
   reset(): void {
