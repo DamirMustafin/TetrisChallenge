@@ -228,21 +228,23 @@ export class GameEngine {
   private placePiece(): void {
     if (!this.gameState.currentPiece) return;
 
-    console.log('Placing piece:', this.gameState.currentPiece.shape.name, 'at position:', this.gameState.currentPiece.position);
-
     this.gameBoard.placePiece(
       this.gameState.currentPiece.shape,
       this.gameState.currentPiece.position,
       this.gameState.currentPiece.rotation
     );
 
-    console.log('Board after placing piece:', this.gameBoard.board);
+    // Update the game state board to reflect the placed piece
+    this.gameState.board = this.gameBoard.board.map(row => [...row]);
 
     this.soundManager.playHit();
 
     const linesCleared = this.gameBoard.clearLines();
     
     if (linesCleared > 0) {
+      // Update the game state board after line clearing
+      this.gameState.board = this.gameBoard.board.map(row => [...row]);
+      
       this.gameState.lines += linesCleared;
       this.gameState.combo++;
       

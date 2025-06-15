@@ -87,7 +87,7 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    console.log('Drawing canvas with game state:', gameState.board);
+
 
     // Clear canvas
     ctx.fillStyle = '#1a1a2e';
