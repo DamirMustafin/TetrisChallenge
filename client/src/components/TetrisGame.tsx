@@ -1,11 +1,29 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { GameEngine } from '../lib/tetris/GameEngine';
 import { GameState, TetrominoShape } from '../lib/tetris/types';
-import { rotateTetromino } from '../lib/tetris/Tetromino';
+import { rotateTetromino, TETROMINO_SHAPES } from '../lib/tetris/Tetromino';
 import { BOARD_WIDTH, BOARD_HEIGHT } from '../lib/tetris/GameBoard';
 
 const CELL_SIZE = 30;
 const BOARD_PADDING = 2;
+
+// Function to get color for placed blocks
+const getBlockColor = (blockValue: number): string => {
+  if (blockValue === 0) return 'transparent';
+  
+  // Map ASCII codes back to shape names and get colors
+  const shapeMap: { [key: number]: string } = {
+    73: TETROMINO_SHAPES.I.color, // 'I'
+    79: TETROMINO_SHAPES.O.color, // 'O'
+    84: TETROMINO_SHAPES.T.color, // 'T'
+    83: TETROMINO_SHAPES.S.color, // 'S'
+    90: TETROMINO_SHAPES.Z.color, // 'Z'
+    74: TETROMINO_SHAPES.J.color, // 'J'
+    76: TETROMINO_SHAPES.L.color, // 'L'
+  };
+  
+  return shapeMap[blockValue] || '#888888';
+};
 
 interface TetrisGameProps {}
 
@@ -123,8 +141,18 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
     for (let y = 0; y < BOARD_HEIGHT; y++) {
       for (let x = 0; x < BOARD_WIDTH; x++) {
         if (gameState.board[y][x]) {
-          ctx.fillStyle = '#888888';
+          ctx.fillStyle = getBlockColor(gameState.board[y][x]);
           ctx.fillRect(
+            boardStartX + x * CELL_SIZE + 1,
+            boardStartY + y * CELL_SIZE + 1,
+            CELL_SIZE - 2,
+            CELL_SIZE - 2
+          );
+          
+          // Add border for better visibility
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(
             boardStartX + x * CELL_SIZE + 1,
             boardStartY + y * CELL_SIZE + 1,
             CELL_SIZE - 2,
@@ -149,6 +177,16 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
             
             if (blockY >= 0) {
               ctx.fillRect(
+                boardStartX + blockX * CELL_SIZE + 1,
+                boardStartY + blockY * CELL_SIZE + 1,
+                CELL_SIZE - 2,
+                CELL_SIZE - 2
+              );
+              
+              // Add border for current piece
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 1;
+              ctx.strokeRect(
                 boardStartX + blockX * CELL_SIZE + 1,
                 boardStartY + blockY * CELL_SIZE + 1,
                 CELL_SIZE - 2,
