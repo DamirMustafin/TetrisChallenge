@@ -149,6 +149,47 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
       }
     }
 
+    // Draw ghost piece (preview where piece will land)
+    if (gameState.currentPiece && gameEngineRef.current) {
+      const ghostPosition = gameEngineRef.current.getGhostPiecePosition();
+      if (ghostPosition && ghostPosition.y !== gameState.currentPiece.position.y) {
+        const piece = gameState.currentPiece;
+        const rotatedShape = rotateTetromino(piece.shape, piece.rotation);
+        
+        ctx.fillStyle = piece.shape.color + '40'; // Add transparency
+        
+        for (let y = 0; y < rotatedShape.length; y++) {
+          for (let x = 0; x < rotatedShape[y].length; x++) {
+            if (rotatedShape[y][x]) {
+              const blockX = ghostPosition.x + x;
+              const blockY = ghostPosition.y + y;
+              
+              if (blockY >= 0) {
+                ctx.fillRect(
+                  boardStartX + blockX * CELL_SIZE + 1,
+                  boardStartY + blockY * CELL_SIZE + 1,
+                  CELL_SIZE - 2,
+                  CELL_SIZE - 2
+                );
+                
+                // Add dashed border for ghost piece
+                ctx.strokeStyle = piece.shape.color;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.strokeRect(
+                  boardStartX + blockX * CELL_SIZE + 1,
+                  boardStartY + blockY * CELL_SIZE + 1,
+                  CELL_SIZE - 2,
+                  CELL_SIZE - 2
+                );
+                ctx.setLineDash([]); // Reset dash
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Draw current piece
     if (gameState.currentPiece) {
       const piece = gameState.currentPiece;

@@ -292,4 +292,23 @@ export class GameEngine {
   getCurrentState(): GameState {
     return { ...this.gameState };
   }
+
+  // Calculate ghost piece position (where current piece would land)
+  getGhostPiecePosition(): Position | null {
+    if (!this.gameState.currentPiece) return null;
+
+    const currentPiece = this.gameState.currentPiece;
+    let ghostY = currentPiece.position.y;
+
+    // Find the lowest valid position
+    while (this.gameBoard.isValidPosition(
+      currentPiece.shape,
+      { x: currentPiece.position.x, y: ghostY + 1 },
+      currentPiece.rotation
+    )) {
+      ghostY++;
+    }
+
+    return { x: currentPiece.position.x, y: ghostY };
+  }
 }
