@@ -19,16 +19,26 @@ export class SoundManager {
   }
 
   private loadSounds(): void {
-    try {
-      this.sounds.hit = new Audio('/sounds/hit.mp3');
-      this.sounds.success = new Audio('/sounds/success.mp3');
-      
-      // Set volumes
-      this.sounds.hit.volume = 0.3;
-      this.sounds.success.volume = 0.5;
-    } catch (error) {
-      console.log('Could not load sounds:', error);
-    }
+    // We'll use Web Audio API for all sounds now
+  }
+
+  private playTone(frequency: number, duration: number, type: OscillatorType = 'square'): void {
+    if (!this.audioContext || this.muted) return;
+
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+    oscillator.type = type;
+
+    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
+
+    oscillator.start(this.audioContext.currentTime);
+    oscillator.stop(this.audioContext.currentTime + duration / 1000);
   }
 
   // Tetris theme melody (Korobeiniki) - simplified version
