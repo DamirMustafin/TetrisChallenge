@@ -19,7 +19,14 @@ export class SoundManager {
   }
 
   private loadSounds(): void {
-    // We'll use Web Audio API for all sounds now
+    try {
+      // Try to load custom background music if available
+      this.sounds.background = new Audio('/sounds/tetris-theme.mp3');
+      this.sounds.background.volume = 0.3;
+      this.sounds.background.loop = true;
+    } catch (error) {
+      console.log('Custom music not found, using generated music');
+    }
   }
 
   private playTone(frequency: number, duration: number, type: OscillatorType = 'square'): void {
@@ -98,31 +105,50 @@ export class SoundManager {
   }
 
   playHit(): void {
-    if (!this.muted && this.sounds.hit) {
-      this.sounds.hit.currentTime = 0;
-      this.sounds.hit.play().catch(() => {});
-    }
+    // Play a short hit sound
+    this.playTone(220, 100, 'square');
   }
 
   playSuccess(): void {
-    if (!this.muted && this.sounds.success) {
-      this.sounds.success.currentTime = 0;
-      this.sounds.success.play().catch(() => {});
-    }
+    // Play a success chord
+    this.playTone(440, 200, 'sine');
+    setTimeout(() => this.playTone(554, 200, 'sine'), 50);
+    setTimeout(() => this.playTone(659, 300, 'sine'), 100);
   }
 
   playBackground(): void {
-    if (!this.muted && this.audioContext) {
-      // Resume audio context if it was suspended
-      if (this.audioContext.state === 'suspended') {
-        this.audioContext.resume();
-      }
-      this.currentNoteIndex = 0;
-      this.playNextNote();
+    if (this.muted) return;
+    
+    // Try to play custom music first
+    if (this.sounds.background) {
+      this.sounds.background.play().catch(() => {
+        // If custom music fails, fall back to generated music
+        this.playGeneratedMusic();
+      });
+    } else {
+      this.playGeneratedMusic();
     }
   }
 
+  private playGeneratedMusic(): void {
+    if (!this.audioContext) return;
+    
+    // Resume audio context if it was suspended
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    this.currentNoteIndex = 0;
+    this.playNextNote();
+  }
+
   stopBackground(): void {
+    // Stop custom music
+    if (this.sounds.background) {
+      this.sounds.background.pause();
+      this.sounds.background.currentTime = 0;
+    }
+    
+    // Stop generated music
     if (this.musicTimeout) {
       clearTimeout(this.musicTimeout);
       this.musicTimeout = null;

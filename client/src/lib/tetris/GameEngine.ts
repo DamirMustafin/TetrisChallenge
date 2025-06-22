@@ -46,8 +46,10 @@ export class GameEngine {
   }
 
   start(): void {
-    this.gameState = this.createInitialState();
+    // Completely reset everything
     this.gameBoard.reset();
+    this.gameState = this.createInitialState();
+    this.gameState.board = this.gameBoard.board.map(row => [...row]); // Ensure clean board state
     this.spawnNewPiece();
     this.dropTimer = 0;
     this.lastTime = performance.now();

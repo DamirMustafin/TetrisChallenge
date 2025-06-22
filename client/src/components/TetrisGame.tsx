@@ -29,46 +29,38 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
     };
   }, []);
 
-  // Keyboard controls
+  // Keyboard controls - support both English and Russian layouts
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!gameEngineRef.current || !isStarted) return;
 
-    switch (event.key) {
-      case 'ArrowLeft':
-        event.preventDefault();
-        gameEngineRef.current.moveLeft();
-        break;
-      case 'ArrowRight':
-        event.preventDefault();
-        gameEngineRef.current.moveRight();
-        break;
-      case 'ArrowDown':
-        event.preventDefault();
-        gameEngineRef.current.moveDown();
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        gameEngineRef.current.rotate();
-        break;
-      case ' ':
-        event.preventDefault();
-        gameEngineRef.current.hardDrop();
-        break;
-      case 'c':
-      case 'C':
-        event.preventDefault();
-        gameEngineRef.current.hold();
-        break;
-      case 'p':
-      case 'P':
-        event.preventDefault();
-        gameEngineRef.current.pause();
-        break;
-      case 'm':
-      case 'M':
-        event.preventDefault();
-        gameEngineRef.current.toggleMute();
-        break;
+    const key = event.key.toLowerCase();
+    const code = event.code;
+
+    // Arrow keys work regardless of layout
+    if (key === 'arrowleft' || code === 'ArrowLeft') {
+      event.preventDefault();
+      gameEngineRef.current.moveLeft();
+    } else if (key === 'arrowright' || code === 'ArrowRight') {
+      event.preventDefault();
+      gameEngineRef.current.moveRight();
+    } else if (key === 'arrowdown' || code === 'ArrowDown') {
+      event.preventDefault();
+      gameEngineRef.current.moveDown();
+    } else if (key === 'arrowup' || code === 'ArrowUp') {
+      event.preventDefault();
+      gameEngineRef.current.rotate();
+    } else if (key === ' ' || code === 'Space') {
+      event.preventDefault();
+      gameEngineRef.current.hardDrop();
+    } else if (key === 'c' || key === 'с' || code === 'KeyC') { // English 'c' and Russian 'с'
+      event.preventDefault();
+      gameEngineRef.current.hold();
+    } else if (key === 'p' || key === 'з' || code === 'KeyP') { // English 'p' and Russian 'з'
+      event.preventDefault();
+      gameEngineRef.current.pause();
+    } else if (key === 'm' || key === 'ь' || code === 'KeyM') { // English 'm' and Russian 'ь'
+      event.preventDefault();
+      gameEngineRef.current.toggleMute();
     }
   }, [isStarted]);
 
@@ -390,13 +382,16 @@ const TetrisGame: React.FC<TetrisGameProps> = () => {
         <div className="mt-4 text-white text-center">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p><strong>Arrow Keys:</strong> Move/Rotate</p>
-              <p><strong>Space:</strong> Hard Drop</p>
+              <p><strong>Стрелки:</strong> Движение/Поворот</p>
+              <p><strong>Пробел:</strong> Быстрое падение</p>
             </div>
             <div>
-              <p><strong>C:</strong> Hold Piece</p>
-              <p><strong>P:</strong> Pause</p>
+              <p><strong>C/С:</strong> Отложить фигуру</p>
+              <p><strong>P/З:</strong> Пауза</p>
             </div>
+          </div>
+          <div className="mt-2 text-xs text-gray-300">
+            <p>Работает на русской и английской раскладке</p>
           </div>
         </div>
       )}
